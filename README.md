@@ -21,7 +21,7 @@ Es un protecto, basado en el codigo proporcionado por coderhouse, el mismo es un
 
 1. **Clonar el repositorio:**
    ```bash
-   git clone <url-repositorio>
+   git clone <https://github.com/jesgodoy/Proyecto-Jesica-Godoy-Backend-III.git>
    ```
 
 2. **Instalar dependencias:**
