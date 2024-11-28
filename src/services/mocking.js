@@ -1,12 +1,12 @@
 import { faker } from "@faker-js/faker"; 
-import { createHash } from "../utils/index.js"; // Asegúrate de que esta función esté correctamente implementada
+import { createHash } from "../utils/index.js"; 
 
 class MockingService {
 
-    // Generar mascotas simuladas
+ 
     static async generateMockingPets(num) {
         if (num <= 0) {
-            return []; // Si el número es 0 o negativo, devuelve un arreglo vacío
+            return []; 
         }
 
         const pets = []; 
@@ -18,19 +18,18 @@ class MockingService {
             });
         }
         
-        console.log("Mascotas generadas:", pets); // Para verificar en consola que las mascotas están siendo generadas
         return pets; 
     }
 
-    // Generar usuarios simulados
+ 
     static async generateMockingUsers(num) {
         if (num <= 0) {
-            return []; // Si el número es 0 o negativo, devuelve un arreglo vacío
+            return []; 
         }
 
         const users = []; 
         for (let i = 0; i < num; i++) {
-            const passwordHash = await createHash("coder123"); // Usar await si es necesario
+            const passwordHash = await createHash("coder123");
             users.push({
                 first_name: faker.person.firstName(),
                 last_name: faker.person.lastName(),
@@ -40,8 +39,7 @@ class MockingService {
                 pets: []
             });
         }
-        
-        console.log("Usuarios generados:", users); // Para verificar en consola que los usuarios están siendo generados
+         
         return users; 
     }
 }

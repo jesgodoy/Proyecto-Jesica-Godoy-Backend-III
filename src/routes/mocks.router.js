@@ -1,18 +1,18 @@
 import { Router } from "express";
-import mocksController from "../controllers/mocks.controller.js"; //Importamos el controlador 
+import mocksController from "../controllers/mocks.controller.js";
 
-const router = Router(); 
+const router = Router();
 
+// Ruta para obtener mascotas simuladas
+router.get("/mockingpets", mocksController.getMockingPets);
 
+// Ruta para obtener usuarios simulados
+router.get("/mockingusers", mocksController.getMockingUsers);
 
-//Crear la ruta para obtener mascotas: 
-router.get("/mockingpets", mocksController.getMockingPets); 
+// Ruta para generar y guardar datos en la base de datos
+router.post("/generatedata", mocksController.generateData);
 
-//Crear la ruta para obtener usuarios: 
-router.get("/mockingusers", mocksController.getMockingUsers); 
+// Ruta para obtener los usuarios y mascotas generados y guardados en la base de datos
+router.get("/generatedata", mocksController.getGeneratedData);  
 
-//Crear una ruta que reciba dos parametros numericos (usuarios y mascotas) e insertarlos en la base de datos. 
-router.post("/generatedata", mocksController.generateData); 
-
-
-export default router; 
+export default router;
