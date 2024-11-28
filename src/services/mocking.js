@@ -1,8 +1,8 @@
 import { faker } from "@faker-js/faker"; 
-import { createHash } from "../utils/index.js"; // Asegúrate de que la función createHash esté correctamente implementada
+import { createHash } from "../utils/index.js"; // Asegúrate de que esta función esté correctamente implementada
 
 class MockingService {
-    
+
     // Generar mascotas simuladas
     static async generateMockingPets(num) {
         if (num <= 0) {
@@ -17,6 +17,8 @@ class MockingService {
                 adopted: false
             });
         }
+        
+        console.log("Mascotas generadas:", pets); // Para verificar en consola que las mascotas están siendo generadas
         return pets; 
     }
 
@@ -38,8 +40,11 @@ class MockingService {
                 pets: []
             });
         }
+        
+        console.log("Usuarios generados:", users); // Para verificar en consola que los usuarios están siendo generados
         return users; 
     }
 }
 
 export default MockingService;
+

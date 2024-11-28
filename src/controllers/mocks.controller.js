@@ -1,47 +1,31 @@
-import MockingService from "../services/mocking.js";
+import MockingService from '../services/mocking.js';
+import User from '../dao/models/User.js';  // Asegúrate de que estos estén correctamente importados
+import Pet from '../dao/models/Pet.js';
 
-// Definir un límite máximo para la cantidad de usuarios y mascotas
-const MAX_USERS_LIMIT = 500;  // Máximo de 500 usuarios
-const MAX_PETS_LIMIT = 800;   // Máximo de 800 mascotas
-
-// Función para obtener mascotas simuladas
-const getMockingPets = async (req, res) => {
-    try {
-        let limit = Math.max(1, Number(req.query.pets) || 100); // Limitar con un valor mínimo de 1
-        limit = Math.min(limit, MAX_PETS_LIMIT); // Aplicar límite máximo
-
-        const pets = await MockingService.generateMockingPets(limit); // Generar solo la cantidad solicitada
-
-        res.status(200).json({
-            status: "success",
-            requested: limit,
-            payload: pets, // Devolver todas las mascotas generadas
-            details: {
-                totalGenerated: pets.length,
-                sample: pets // Incluir todas las mascotas generadas
-            }
-        });
-    } catch (error) {
-        console.error("Error al obtener mascotas simuladas:", error);
-        res.status(500).json({ error: "No se pudieron obtener las mascotas" });
-    }
-};
+const MAX_USERS_LIMIT = 500;  // Límite máximo de usuarios
+const MAX_PETS_LIMIT = 800;   // Límite máximo de mascotas
 
 // Función para obtener usuarios simulados
 const getMockingUsers = async (req, res) => {
     try {
-        let limit = Math.max(1, Number(req.query.users) || 50); // Limitar con un valor mínimo de 1
-        limit = Math.min(limit, MAX_USERS_LIMIT); // Aplicar límite máximo
+        // Obtener el número de usuarios a generar desde la query string (con valor por defecto 50)
+        let limit = Math.max(1, Number(req.query.users) || 50); // Asegúrate de que siempre haya al menos 1 usuario
+        limit = Math.min(limit, 500); // Limitar a un máximo de 500 usuarios
 
-        const users = await MockingService.generateMockingUsers(limit); // Generar solo la cantidad solicitada
+        console.log(`Generando ${limit} usuarios...`);  // Verifica que estamos recibiendo el valor correcto
+
+        const users = await MockingService.generateMockingUsers(limit);  // Genera los usuarios
+
+        // Muestra los usuarios generados en la consola
+        console.log("Usuarios generados:", users); 
 
         res.status(200).json({
             status: "success",
             requested: limit,
-            payload: users, // Devolver todos los usuarios generados
+            payload: users,  // Devuelve los usuarios generados
             details: {
-                totalGenerated: users.length,
-                sample: users // Incluir todos los usuarios generados
+                totalGenerated: users.length,  // Cantidad total de usuarios generados
+                sample: users  // Muestra una muestra de los usuarios generados
             }
         });
     } catch (error) {
@@ -50,35 +34,80 @@ const getMockingUsers = async (req, res) => {
     }
 };
 
+// Función para obtener mascotas simuladas
+const getMockingPets = async (req, res) => {
+    try {
+        // Obtener el número de mascotas a generar desde la query string (con valor por defecto 100)
+        let limit = Math.max(1, Number(req.query.pets) || 100); // Asegúrate de que siempre haya al menos 1 mascota
+        limit = Math.min(limit, 800); // Limitar a un máximo de 800 mascotas
+
+        console.log(`Generando ${limit} mascotas...`);  // Verifica que estamos recibiendo el valor correcto
+
+        const pets = await MockingService.generateMockingPets(limit);  // Genera las mascotas
+
+        // Muestra las mascotas generadas en la consola
+        console.log("Mascotas generadas:", pets);
+
+        res.status(200).json({
+            status: "success",
+            requested: limit,
+            payload: pets,  // Devuelve las mascotas generadas
+            details: {
+                totalGenerated: pets.length,  // Cantidad total de mascotas generadas
+                sample: pets  // Muestra una muestra de las mascotas generadas
+            }
+        });
+    } catch (error) {
+        console.error("Error al obtener mascotas simuladas:", error);
+        res.status(500).json({ error: "No se pudieron obtener las mascotas" });
+    }
+};
+
 const generateData = async (req, res) => {
-    const { users = 0, pets = 0 } = req.query;
+    // Obtener los parámetros 'users' y 'pets' del cuerpo de la solicitud
+    const { users = 0, pets = 0 } = req.body;
+
+    console.log(`Datos recibidos: usuarios = ${users}, mascotas = ${pets}`);
 
     try {
-        // Validación de valores pasados en los parámetros de la consulta
-        const numUsers = Math.max(0, Math.min(parseInt(users) || 0, MAX_USERS_LIMIT)); 
-        const numPets = Math.max(0, Math.min(parseInt(pets) || 0, MAX_PETS_LIMIT)); 
+        const numUsers = Math.max(0, Math.min(users, 500));  // Limitar a un máximo de 500 usuarios
+        const numPets = Math.max(0, Math.min(pets, 800));    // Limitar a un máximo de 800 mascotas
 
         console.log(`Generando ${numUsers} usuarios y ${numPets} mascotas`);
 
-        // Generar usuarios y mascotas de acuerdo a los valores pasados
+        // Generar usuarios y mascotas de manera asincrónica
         const [generatedUsers, generatedPets] = await Promise.all([
             MockingService.generateMockingUsers(numUsers),
-            MockingService.generateMockingPets(numPets),
+            MockingService.generateMockingPets(numPets)
         ]);
 
-        console.log(`Usuarios generados: ${generatedUsers.length}, Mascotas generadas: ${generatedPets.length}`);
+        // Guardar las mascotas en la base de datos
+        const savedPets = await Pet.insertMany(generatedPets);
 
+        // Asignar las mascotas guardadas a los usuarios
+        for (let user of generatedUsers) {
+            // Asignar un conjunto aleatorio de mascotas a cada usuario
+            user.pets = savedPets.slice(0, Math.floor(Math.random() * savedPets.length));
+        }
+
+        // Guardar los usuarios en la base de datos
+        const savedUsers = await User.insertMany(generatedUsers);
+
+        console.log("Usuarios generados:", savedUsers);
+        console.log("Mascotas generadas:", savedPets);
+
+        // Devolver la respuesta con los datos generados
         res.status(200).json({
-            message: "Datos generados exitosamente",
+            message: "Datos generados y guardados correctamente",
             generated: {
-                users: generatedUsers.length,
-                pets: generatedPets.length,
+                users: savedUsers.length,
+                pets: savedPets.length,
             },
             details: {
-                userSample: generatedUsers,  // Devolver todos los usuarios generados
-                petSample: generatedPets,    // Devolver todas las mascotas generadas
-                totalUsers: generatedUsers.length,
-                totalPets: generatedPets.length
+                userSample: savedUsers,
+                petSample: savedPets,
+                totalUsers: savedUsers.length,
+                totalPets: savedPets.length
             }
         });
     } catch (error) {
@@ -87,8 +116,9 @@ const generateData = async (req, res) => {
     }
 };
 
+
 export default {
     getMockingUsers,
     getMockingPets,
-    generateData, // Para POST y GET
+    generateData, // Exporta la función generateData
 };
