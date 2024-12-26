@@ -16,6 +16,17 @@ Es un protecto, basado en el codigo proporcionado por coderhouse, el mismo es un
 | GET | `/api/mocks/mockingusers` | Genera 50 usuarios simulados |
 | POST | `/api/mocks/generateData` | Genera y guarda usuarios y mascotas en la base de datos |
 
+## Vínculo a Docker Hub: 
+**mi perfil de DockerHub**
+ ```bash
+   < https://hub.docker.com/u/jesicag7 >
+   ```
+   
+**Imagen del Proyecto:**
+ ```bash
+   < https://hub.docker.com/r/jesicag7/backend3jesigodoy >
+   ```
+
 
 ## 💻 Configuración y Uso
 
@@ -51,3 +62,6 @@ Es un protecto, basado en el codigo proporcionado por coderhouse, el mismo es un
 - **Mongoose**: ORM para MongoDB
 - **Faker.js**: Biblioteca para generación de datos de prueba
 - **bcrypt**: Biblioteca para encriptación de contraseñas
+- **Supertest**: Herramienta para realizar pruebas HTTP.
+- **Chai**: Biblioteca de aserciones para pruebas unitarias.
+- **Mocha**: Framework de pruebas para Node.js.
