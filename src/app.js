@@ -32,6 +32,13 @@ app.use('/api/adoptions', adoptionsRouter);
 app.use('/api/sessions', sessionsRouter);
 app.use('/api/mocks', mocksRouter); // Aquí registramos las rutas de mocks
 
-app.listen(PORT, () => {
-    console.log(`Escuchando en el puerto ${PORT}`);
-});
+export const startServer = (port) => {
+  return new Promise((resolve) => {
+      const server = app.listen(port, () => {
+          console.log(`Servidor escuchando en http://localhost:${port}/`);
+          resolve(server);
+      });
+  });
+};
+
+export default app;
